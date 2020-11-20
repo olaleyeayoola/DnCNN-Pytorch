@@ -1,19 +1,18 @@
 import torch
-import torchvision
 import torchvision.transforms as transforms
 from PIL import Image
-import numpy as np
-import os
 from torch.autograd import Variable
+from matplotlib import pyplot as plt
+
 
 device = 'cuda'
 # model = SRNET().to(device)
 model = torch.load('/content/model_epoch_175.pth')
 model = model['arch']
 loader = transforms.Compose([
-        transforms.Resize((128,128)),
-        transforms.ToTensor()
-    ])
+    transforms.Resize((128, 128)),
+    transforms.ToTensor()
+])
 
 
 def image_loader(image_name):
@@ -21,7 +20,7 @@ def image_loader(image_name):
     image = Image.open(image_name)
     image = loader(image).float()
     image = Variable(image, requires_grad=True)
-    image = image.unsqueeze(0) 
+    image = image.unsqueeze(0)
     return image.cuda()
 
 
