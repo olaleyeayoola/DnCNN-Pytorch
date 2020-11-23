@@ -9,8 +9,8 @@ def dataloader(train_dir, test_dir, crop_size, batch_size):
         transforms.ToTensor(),
     ])
 
-    train_dataset = ImageDataset(train_dir, input_transforms(crop_size))
-    test_dataset = ImageDataset(test_dir, input_transforms(crop_size))
+    train_dataset = ImageDataset(train_dir, input_transforms)
+    test_dataset = ImageDataset(test_dir, input_transforms)
 
     training_data_loader = DataLoader(
         dataset=train_dataset, batch_size=batch_size)
