@@ -2,28 +2,16 @@ import torch
 import torchvision.transforms as transforms
 from PIL import Image
 from torch.autograd import Variable
-from matplotlib import pyplot as plt
-from skimage.measure.simple_metrics import compare_psnr
+
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg",
                                                               ".jpeg", ".gif"])
 
 
-def gaussian(ins, is_training, mean, stddev):
-    if is_training:
-        noise = Variable(ins.data.new(ins.size()).normal_(mean, stddev))
-        return ins + noise
-    return ins
-
-def batch_PSNR(img, imclean, data_range):
-    Img = img.data.cpu().numpy().astype(np.float32)
-    Iclean = imclean.data.cpu().numpy().astype(np.float32)
-    PSNR = 0
-    for i in range(Img.shape[0]):
-        PSNR += compare_psnr(Iclean[i, :, :, :],
-                             Img[i, :, :, :], data_range=data_range)
-    return (PSNR/Img.shape[0])
+def gaussian(ins, mean, stddev):
+    noise = Variable(ins.data.new(ins.size()).normal_(mean, stddev))
+    return ins + noise, noise
 
 
 def save_checkpoint(state):

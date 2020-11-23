@@ -15,11 +15,13 @@ def get_args():
                         help="path to save image to")
     parser.add_argument("--crop_size", default=224, type=int,
                         help="size to resize image to")
-    parser.add_argument("--model_path", default='trained_model/model_epoch_10.pth',
+    parser.add_argument("--model_path",
+                        default='trained_model/model_epoch_10.pth',
                         help="path to saved model")
 
     args = parser.parse_args()
     return args
+
 
 if __name__ == "__main__":
     args = get_args()
