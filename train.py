@@ -51,6 +51,7 @@ def train(epoch, model, optimizer, training_data_loader, gaussian, criterion):
 
         loss.backward()
         optimizer.step()
+        optimizer.zero_grad()
 
         print("===> Epoch[{}]({}/{}): Loss: {:.4f}".format(
             epoch,
@@ -116,6 +117,7 @@ def get_args():
 
 
 if __name__ == "__main__":
+    args = get_args()
     # device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     num_epochs = 10

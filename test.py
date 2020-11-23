@@ -1,40 +1,44 @@
 import torch
 import torchvision.transforms as transforms
-from PIL import Image
-from torch.autograd import Variable
-from matplotlib import pyplot as plt
+from model import DnCNN
+from utils import image_loader, predict
+import argparse
 
 
-device = 'cuda'
-# model = SRNET().to(device)
-model = torch.load('/content/model_epoch_175.pth')
-model = model['arch']
-loader = transforms.Compose([
-    transforms.Resize((128, 128)),
-    transforms.ToTensor()
-])
+def get_args():
+    parser = argparse.ArgumentParser(allow_abbrev=False)
 
+    # DATA PATHS
+    parser.add_argument("--image_path", default='images/guassian.png',
+                        help="path to image")
+    parser.add_argument("--save_image_path", default='images',
+                        help="path to save image to")
+    parser.add_argument("--crop_size", default=224, type=int,
+                        help="size to resize image to")
+    parser.add_argument("--model_path", default='trained_model/model_epoch_10.pth',
+                        help="path to saved model")
 
-def image_loader(image_name):
-    """load image, returns tensor"""
-    image = Image.open(image_name)
-    image = loader(image).float()
-    image = Variable(image, requires_grad=True)
-    image = image.unsqueeze(0)
-    return image.cuda()
+    args = parser.parse_args()
+    return args
 
+if __name__ == "__main__":
+    args = get_args()
 
-def predict(classifer, image):
-    out = classifer(image)
-    out = out.cpu().clone()
-    out = out.squeeze(0)
-    trans = transforms.ToPILImage()
-    plt.imshow(trans(out))
-    trans(out).save('out.png')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    model = DnCNN().to(device)
+    model = torch.load(args.model_path,  map_location=device)
+    model = model['arch']
 
-img_path = '/content/drive/My Drive/SR_Data/test/lr/5_09.png'
-# pass the image into the image_loader function
-image = image_loader(img_path)
-# get prediction
-predict(model, image)
+    loader = transforms.Compose([
+        transforms.Resize((args.crop_size, args.crop_size)),
+        transforms.ToTensor()
+    ])
+
+    img_path = args.image_path
+
+    # pass the image into the image_loader function
+    image = image_loader(img_path, loader, device)
+
+    # get prediction
+    predict(model, image, args.save_image_path)
